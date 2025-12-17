@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGWorkPass Portal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .mobile-container {
+      max-width: 400px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    .header {
+      background: #4472C4;
+      color: white;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 400;
+    }
+
+    .header-menu {
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .tab-container {
+      background: white;
+    }
+
+    .tab-nav {
+      display: flex;
+      background-color: white;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 1rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 400;
+      color: #666;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .tab-button.active {
+      color: #4472C4;
+      border-bottom-color: #4472C4;
+      font-weight: 500;
+    }
+
+    .tab-content {
+      background: #f5f5f5;
+      min-height: calc(100vh - 180px);
+    }
+
+    .inbox-content {
+      display: none;
+    }
+
+    .inbox-content.active {
+      display: block;
+    }
+
+    .articles-content {
+      display: none;
+    }
+
+    .articles-content.active {
+      display: block;
+    }
+
+    .message-item {
+      background: white;
+      padding: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+      cursor: pointer;
+    }
+
+    .message-item:active {
+      background: #f0f0f0;
+    }
+
+    .message-title {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .message-preview {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .message-date {
+      font-size: 0.85rem;
+      color: #999;
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .accordion-header {
+      background: white;
+      padding: 1.25rem 1rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.2s ease;
+    }
+
+    .accordion-header:hover {
+      background: #f8f8f8;
+    }
+
+    .accordion-header.active {
+      background: #f0f0f0;
+    }
+
+    .accordion-title {
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: #333;
+      text-align: left;
+    }
+
+    .accordion-arrow {
+      color: #666;
+      font-size: 1.2rem;
+      transition: transform 0.2s ease;
+    }
+
+    .accordion-arrow.expanded {
+      transform: rotate(90deg);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: #f8f8f8;
+    }
+
+    .accordion-content.expanded {
+      max-height: 1000px; /* Increased to prevent cutting off */
+    }
+
+    .accordion-subcategory {
+      padding: 0.75rem 1rem; /* Reduced padding */
+      border-bottom: 1px solid #e8e8e8;
+      cursor: pointer;
+      background: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .accordion-subcategory:last-child {
+      border-bottom: none;
+    }
+
+    .accordion-subcategory:hover {
+      background: #f0f0f0;
+    }
+
+    .accordion-subcategory.active {
+      background: #f0f0f0;
+    }
+
+    .subcategory-title {
+      font-size: 1rem;
+      color: #333;
+      text-align: left;
+    }
+
+    .subcategory-arrow {
+      color: #999;
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+    }
+
+    .subcategory-arrow.expanded {
+      transform: rotate(90deg);
+    }
+
+    .subcategory-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: #f0f0f0;
+    }
+
+    .subcategory-content.expanded {
+      max-height: 1000px; /* Increased to prevent cutting off */
+    }
+
+    .article-item {
+      padding: 0.75rem 1rem; /* Reduced padding */
+      border-bottom: 1px solid #e8e8e8;
+      cursor: pointer;
+      background: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .article-item:last-child {
+      border-bottom: none;
+    }
+
+    .article-item:hover {
+      background: #f0f0f0;
+    }
+
+    .article-item.nested {
+      padding-left: 1.5rem; /* Reduced padding */
+      background: #f8f8f8;
+    }
+
+    .article-item.nested:hover {
+      background: #f0f0f0;
+    }
+
+    .article-title {
+      font-size: 1rem;
+      color: #333;
+      text-align: left;
+      line-height: 1.3;
+    }
+
+    .article-arrow {
+      color: #999;
+      font-size: 1rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #666;
+      background: white;
+    }
+
+    .empty-state-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      opacity: 0.6;
+    }
+
+    .loading {
+      text-align: center;
+      color: #666;
+      background: white;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 400px;
+      background: white;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      padding: 0.5rem 0;
+    }
+
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      padding: 0.5rem;
+      color: #666;
+      text-decoration: none;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nav-item.active {
+      color: #4472C4;
+    }
+
+    .nav-icon {
+      font-size: 1.2rem;
+    }
+
+    .content-container {
+      padding-bottom: 80px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mobile-container">
+    <div class="header">
+      <h1>Inbox</h1>
+      <div class="header-menu">⋮</div>
+    </div>
+
+    <div class="tab-container">
+      <div class="tab-nav">
+        <button class="tab-button" onclick="switchTab('messages')">My Messages</button>
+        <button class="tab-button active" onclick="switchTab('articles')">Articles</button>
+      </div>
+
+      <div class="content-container">
+        <!-- Messages Tab Content -->
+        <div class="inbox-content">
+          <div class="message-item">
+            <div class="message-title">Beware of impersonation scams</div>
+            <div class="message-preview">MOM officers will NEVER ask you to transfer money or disclose bank log-in details over a phone call or email...</div>
+            <div class="message-date">21 Jul 2025</div>
+          </div>
+        </div>
+
+        <!-- Articles Tab Content -->
+        <div class="articles-content active">
+          <div id="articles-container" class="loading">
+            Loading articles...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <a href="#" class="nav-item">
+        <div class="nav-icon">🏠</div>
+        <div>Home</div>
+      </a>
+      <a href="#" class="nav-item active">
+        <div class="nav-icon">✉️</div>
+        <div>Inbox</div>
+      </a>
+      <a href="#" class="nav-item">
+        <div class="nav-icon">⋯</div>
+        <div>More</div>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    let categoryMap = {};
+    let expandedCategories = new Set();
+    let expandedSubcategories = new Set();
+
+    function switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.inbox-content, .articles-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      if (tabName === 'messages') {
+        document.querySelector('.inbox-content').classList.add('active');
+        document.querySelector('.header h1').textContent = 'Inbox';
+      } else if (tabName === 'articles') {
+        document.querySelector('.articles-content').classList.add('active');
+        document.querySelector('.header h1').textContent = 'Inbox';
+        if (Object.keys(categoryMap).length === 0) {
+          init();
+        }
+      }
+    }
+
+    // Initialize articles tab on page load
+    window.onload = function() {
+      init();
+    };
+
+    async function init() {
+      const [categories, articles] = await Promise.all([
+        fetchCategories(),
+        fetchArticles()
+      ]);
+
+      // Build category map
+      categories.forEach(cat => {
+        categoryMap[cat.id] = { 
+          ...cat, 
+          children: [], 
+          articles: []
+        };
+      });
+
+      // Build parent-child relationships
+      categories.forEach(cat => {
+        if (cat.parent_category && categoryMap[cat.parent_category]) {
+          categoryMap[cat.parent_category].children.push(categoryMap[cat.id]);
+        }
+      });
+
+      // Assign articles to categories
+      articles.forEach(article => {
+        const cat = categoryMap[article.category];
+        if (cat) cat.articles.push(article);
+      });
+
+      // Get root categories
+      const roots = categories
+        .filter(cat => !cat.parent_category)
+        .map(cat => categoryMap[cat.id]);
+
+      renderAccordion(roots);
+    }
+
+    function renderAccordion(categories) {
+      const container = document.getElementById("articles-container");
+      
+      if (categories.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📂</div>
+            <h3>No categories found</h3>
+            <p>No article categories are available.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+
+      categories.forEach(category => {
+        const accordionItem = document.createElement('div');
+        accordionItem.className = 'accordion-item';
+        
+        const header = document.createElement('div');
+        header.className = 'accordion-header';
+        header.onclick = () => toggleAccordion(category.id, header);
+        
+        const isExpanded = expandedCategories.has(category.id);
+        
+        header.innerHTML = `
+          <div class="accordion-title">${category.title}</div>
+          <div class="accordion-arrow ${isExpanded ? 'expanded' : ''}">›</div>
+        `;
+        
+        const content = document.createElement('div');
+        content.className = `accordion-content ${isExpanded ? 'expanded' : ''}`;
+        content.id = `content-${category.id}`;
+        
+        if (category.children.length > 0) {
+          // Category has subcategories - show subcategories as nested accordions
+          category.children.forEach(subcategory => {
+            const subItem = document.createElement('div');
+            subItem.className = 'accordion-subcategory';
+            const isSubExpanded = expandedSubcategories.has(subcategory.id);
+            if (isSubExpanded) {
+              subItem.classList.add('active');
+            }
+            
+            subItem.onclick = (e) => {
+              e.stopPropagation();
+              toggleSubcategory(subcategory.id, subItem, content);
+            };
+            
+            subItem.innerHTML = `
+              <div class="subcategory-title">${subcategory.title}</div>
+              <div class="subcategory-arrow ${isSubExpanded ? 'expanded' : ''}">›</div>
+            `;
+            
+            // Create subcategory content container
+            const subContent = document.createElement('div');
+            subContent.className = `subcategory-content ${isSubExpanded ? 'expanded' : ''}`;
+            subContent.id = `subcontent-${subcategory.id}`;
+            
+            // Add articles to subcategory
+            subcategory.articles.forEach(article => {
+              const articleItem = document.createElement('div');
+              articleItem.className = 'article-item nested';
+              articleItem.onclick = (e) => {
+                e.stopPropagation();
+                window.location.href = `article.html?id=${article.id}`;
+              };
+              
+              articleItem.innerHTML = `
+                <div class="article-title">${article.title}</div>
+                <div class="article-arrow">›</div>
+              `;
+              
+              subContent.appendChild(articleItem);
+            });
+            
+            content.appendChild(subItem);
+            content.appendChild(subContent);
+          });
+        } else {
+          // Category has no subcategories - show articles directly
+          category.articles.forEach(article => {
+            const articleItem = document.createElement('div');
+            articleItem.className = 'article-item';
+            articleItem.onclick = (e) => {
+              e.stopPropagation();
+              window.location.href = `article.html?id=${article.id}`;
+            };
+            
+            articleItem.innerHTML = `
+              <div class="article-title">${article.title}</div>
+              <div class="article-arrow">›</div>
+            `;
+            
+            content.appendChild(articleItem);
+          });
+        }
+        
+        accordionItem.appendChild(header);
+        accordionItem.appendChild(content);
+        container.appendChild(accordionItem);
+      });
+    }
+
+    function toggleAccordion(categoryId, headerElement) {
+      const content = document.getElementById(`content-${categoryId}`);
+      const arrow = headerElement.querySelector('.accordion-arrow');
+      
+      if (expandedCategories.has(categoryId)) {
+        // Collapse
+        expandedCategories.delete(categoryId);
+        content.classList.remove('expanded');
+        arrow.classList.remove('expanded');
+        headerElement.classList.remove('active');
+      } else {
+        // Expand
+        expandedCategories.add(categoryId);
+        content.classList.add('expanded');
+        arrow.classList.add('expanded');
+        headerElement.classList.add('active');
+      }
+    }
+
+    function toggleSubcategory(subcategoryId, headerElement, parentContent) {
+      const subContent = document.getElementById(`subcontent-${subcategoryId}`);
+      const arrow = headerElement.querySelector('.subcategory-arrow');
+      
+      if (expandedSubcategories.has(subcategoryId)) {
+        // Collapse subcategory
+        expandedSubcategories.delete(subcategoryId);
+        subContent.classList.remove('expanded');
+        arrow.classList.remove('expanded');
+        headerElement.classList.remove('active');
+      } else {
+        // Expand subcategory
+        expandedSubcategories.add(subcategoryId);
+        subContent.classList.add('expanded');
+        arrow.classList.add('expanded');
+        headerElement.classList.add('active');
+      }
+    }
+
+    async function fetchCategories() {
+      try {
+        const res = await fetch("https://cms.momsgwp.staging.optical.gov.sg/items/Categories?limit=-1");
+        const data = await res.json();
+        return data.data;
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        return [];
+      }
+    }
+
+    async function fetchArticles() {
+      try {
+        const res = await fetch("https://cms.momsgwp.staging.optical.gov.sg/items/articles?limit=-1");
+        const data = await res.json();
+        return data.data;
+      } catch (error) {
+        console.error("Error fetching articles:", error);
+        return [];
+      }
+    }
+  </script>
+</body>
+
+</html>
